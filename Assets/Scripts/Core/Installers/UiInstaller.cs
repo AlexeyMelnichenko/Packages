@@ -1,10 +1,10 @@
 using Core.UI;
-using Crystal;
 using UnityEngine;
 using Zenject;
 
 namespace Core.Installers
 {
+    //TODO have to load with ApplicationInstaller before GameInstaller
     public class UiInstaller : MonoInstaller
     {
         [SerializeField] private Transform _uiRoot;

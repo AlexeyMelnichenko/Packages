@@ -1,12 +1,14 @@
 using System.Threading.Tasks;
+using Core.Interfaces;
 using UnityEngine;
 
 namespace Core.UI
 {
-    public class WindowBase : MonoBehaviour
+    public class WindowBase : MonoBehaviour, IWindowsClosable
     {
-        [SerializeField] private GameObject _content;
+        [SerializeField] protected GameObject _content;
         [SerializeField] private bool _isNeedCache = true;
+        private IWindowsObserver _windowsObserver;
         private bool _isOpened;
         private TaskCompletionSource<bool> _openTaskSource;
         protected bool _closeResult = false;
@@ -54,6 +56,8 @@ namespace Core.UI
             await AnimateClosing();
             CloseInternal();
             OnClosed();
+            
+            _windowsObserver.OnCloseWindow(this);
         }
 
         private void CloseInternal()
@@ -75,6 +79,11 @@ namespace Core.UI
         public void Push()
         {
             transform.SetAsLastSibling();
+        }
+
+        void IWindowsClosable.SetClosingObserver(IWindowsObserver windowsObserver)
+        {
+            _windowsObserver = windowsObserver;
         }
     }
 }

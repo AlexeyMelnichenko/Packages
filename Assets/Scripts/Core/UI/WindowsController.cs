@@ -1,13 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using Core.UI;
+using Core.Interfaces;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
-namespace Crystal
+namespace Core.UI
 {
-    public class WindowsController
+    public class WindowsController : IWindowsObserver
     {
         private readonly Transform _uiRoot;
         private readonly Dictionary<Type, WindowBase> _registeredWindows;
@@ -37,7 +35,7 @@ namespace Crystal
             }
         }
 
-        public void Open<TWindow>() where TWindow : WindowBase
+        public TWindow Open<TWindow>() where TWindow : WindowBase
         {
             var windowType = typeof(TWindow);
             var window = GetWindow(windowType);
@@ -50,6 +48,8 @@ namespace Crystal
                 window.Open();
                 _openedWindows.Add(window);
             }
+
+            return (TWindow)window;
         }
 
         private WindowBase GetWindow(Type windowType)
@@ -62,12 +62,31 @@ namespace Crystal
                 }
 
                 var windowPrefab = _registeredWindows[windowType];
-                var window = Object.Instantiate(windowPrefab, _uiRoot);
+                var window = UnityEngine.Object.Instantiate(windowPrefab, _uiRoot);
+                ((IWindowsClosable)window).SetClosingObserver(this);
                 _cachedWindows[windowType] = window;
                 return window;
             }
 
             throw new Exception($"Window {windowType.Name} is not registered!");
+        }
+
+        void IWindowsObserver.OnCloseWindow(WindowBase window)
+        {
+            if (_openedWindows.Contains(window))
+            {
+                _openedWindows.Remove(window);
+            }
+
+            var type = window.GetType();
+
+            if (window.IsNeedCache || !_cachedWindows.ContainsKey(type))
+            {
+                return;
+            }
+            
+            _cachedWindows.Remove(type);
+            UnityEngine.Object.Destroy(window.gameObject);
         }
     }
 }
