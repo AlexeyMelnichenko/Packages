@@ -6,8 +6,8 @@ namespace GameScripts
 {
     public class Game : IInitializable
     {
-        private readonly WindowsController _windowsController;
         private GameWindow _gameWindow;
+        private readonly WindowsController _windowsController;
 
         public Game(WindowsController windowsController)
         {
@@ -16,7 +16,8 @@ namespace GameScripts
 
         public void Initialize()
         {
-            _gameWindow = _windowsController.Open<GameWindow>();
+            var gameWindowIntent = new GameIntent(this);
+            _gameWindow = _windowsController.Open<GameWindow, GameIntent>(gameWindowIntent);
         }
     }
 }

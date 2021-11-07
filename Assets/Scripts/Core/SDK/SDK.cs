@@ -4,21 +4,22 @@ namespace Core.SDK
 {
     public class SDK
     {
-        private static readonly TaskCompletionSource<bool> _initializeTadskCompletionSource = new TaskCompletionSource<bool>();
-        public static Task<bool> InitializeTask => _initializeTadskCompletionSource.Task;
+        private static readonly TaskCompletionSource<bool> _initializeTaskCompletionSource = new TaskCompletionSource<bool>();
+        public static Task<bool> InitializeTask => _initializeTaskCompletionSource.Task;
         public bool Initialized { get; private set; }
 
         public async void Initialize()
         {
             if (Initialized)
             {
-                _initializeTadskCompletionSource.TrySetResult(Initialized);
+                _initializeTaskCompletionSource.TrySetResult(Initialized);
             }
 
+            //simulation of download
             await Task.Delay(2000);
 
             Initialized = true;
-            _initializeTadskCompletionSource.SetResult(true);
+            _initializeTaskCompletionSource.SetResult(true);
         }
     }
 }

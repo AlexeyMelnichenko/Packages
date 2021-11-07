@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Core.UI
 {
-    public class WindowsController : IWindowsObserver
+    public class WindowsController : IWindowsController
     {
         private readonly Transform _uiRoot;
         private readonly Dictionary<Type, WindowBase> _registeredWindows;
@@ -33,6 +33,13 @@ namespace Core.UI
             {
                 _registeredWindows[windowType] = window;
             }
+        }
+
+        public TWindow Open<TWindow, TIntent>(TIntent intent) where TWindow : WindowWithIntent<TIntent> where TIntent : EmptyIntent
+        {
+            var window = Open<TWindow>();
+            ((IIntentSetter<TIntent>)window).SetIntent(intent);
+            return window;
         }
 
         public TWindow Open<TWindow>() where TWindow : WindowBase
@@ -63,7 +70,7 @@ namespace Core.UI
 
                 var windowPrefab = _registeredWindows[windowType];
                 var window = UnityEngine.Object.Instantiate(windowPrefab, _uiRoot);
-                ((IWindowsClosable)window).SetClosingObserver(this);
+                ((IWindowsControllerContainer)window).SetWindowsController(this);
                 _cachedWindows[windowType] = window;
                 return window;
             }
@@ -71,7 +78,7 @@ namespace Core.UI
             throw new Exception($"Window {windowType.Name} is not registered!");
         }
 
-        void IWindowsObserver.OnCloseWindow(WindowBase window)
+        void IWindowsController.OnCloseWindow(WindowBase window)
         {
             if (_openedWindows.Contains(window))
             {

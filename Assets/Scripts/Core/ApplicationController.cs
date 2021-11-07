@@ -1,4 +1,5 @@
 using Core.UI;
+using UI;
 using UnityEngine;
 using Zenject;
 
@@ -15,13 +16,18 @@ namespace Core
             _windowsController = windowsController;
         }
         
-        public void Initialize()
+        public async void Initialize()
         {
             Application.targetFrameRate = 60;
 
             SDK.Initialize();
-            
-            
+
+            var splashWindow = _windowsController.Open<SplashWindow>();
+
+            await splashWindow.CloseTask;
+
+            var game = new GameScripts.Game(_windowsController);
+            game.Initialize();
         }
     }
 }

@@ -4,17 +4,17 @@ using UnityEngine;
 
 namespace Core.UI
 {
-    public class WindowBase : MonoBehaviour, IWindowsClosable
+    public abstract class WindowBase : MonoBehaviour, IWindowsControllerContainer
     {
         [SerializeField] protected GameObject _content;
         [SerializeField] private bool _isNeedCache = true;
-        private IWindowsObserver _windowsObserver;
         private bool _isOpened;
         private TaskCompletionSource<bool> _openTaskSource;
         protected bool _closeResult = false;
         
         public Task<bool> CloseTask => _openTaskSource?.Task ?? Task.FromResult(_closeResult);
         public bool IsNeedCache => _isNeedCache;
+        public IWindowsController WindowsController { get; private set; }
 
         public async void Open()
         {
@@ -57,7 +57,7 @@ namespace Core.UI
             CloseInternal();
             OnClosed();
             
-            _windowsObserver.OnCloseWindow(this);
+            WindowsController.OnCloseWindow(this);
         }
 
         private void CloseInternal()
@@ -81,9 +81,9 @@ namespace Core.UI
             transform.SetAsLastSibling();
         }
 
-        void IWindowsClosable.SetClosingObserver(IWindowsObserver windowsObserver)
+        void IWindowsControllerContainer.SetWindowsController(IWindowsController windowsController)
         {
-            _windowsObserver = windowsObserver;
+            WindowsController = windowsController;
         }
     }
 }
