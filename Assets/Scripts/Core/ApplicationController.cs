@@ -1,5 +1,4 @@
-using Core.UI;
-using UI;
+using Core.Interfaces;
 using UnityEngine;
 using Zenject;
 
@@ -7,27 +6,26 @@ namespace Core
 {
     public class ApplicationController : IInitializable
     {
-        private readonly WindowsController _windowsController;
+        public IWindowsController WindowsController { get; }
         
         public SDK.SDK SDK { get; } = new SDK.SDK();
 
-        public ApplicationController(WindowsController windowsController)
+        public ApplicationController(IWindowsController windowsController)
         {
-            _windowsController = windowsController;
+            WindowsController = windowsController;
         }
         
-        public async void Initialize()
+        public void Initialize()
         {
             Application.targetFrameRate = 60;
 
             SDK.Initialize();
+            
+            OnInitialize();
+        }
 
-            var splashWindow = _windowsController.Open<SplashWindow>();
-
-            await splashWindow.CloseTask;
-
-            var game = new GameScripts.Game(_windowsController);
-            game.Initialize();
+        protected virtual void OnInitialize()
+        {
         }
     }
 }

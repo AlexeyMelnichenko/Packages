@@ -134,7 +134,7 @@ GameObject:
   - component: {fileID: 250799392}
   - component: {fileID: 250799393}
   m_Layer: 0
-  m_Name: ApplicationInstaller
+  m_Name: GameApplicationInstaller
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -163,7 +163,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 250799391}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 019703662c424b741afc73e53d830614, type: 3}
+  m_Script: {fileID: 11500000, guid: 14417cb6e51a42eeb0d0e5a654554ba6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &476581736

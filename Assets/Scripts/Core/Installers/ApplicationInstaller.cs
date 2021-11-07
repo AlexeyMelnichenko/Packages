@@ -6,6 +6,11 @@ namespace Core.Installers
     {
         public override void InstallBindings()
         {
+            BindClasses();
+        }
+
+        protected virtual void BindClasses()
+        {
             Container.BindInterfacesAndSelfTo<ApplicationController>().AsSingle();
         }
     }
