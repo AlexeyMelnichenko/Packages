@@ -1,25 +1,24 @@
-using System.Threading.Tasks;
+using Core.Interfaces;
 
 namespace Core.SDK
 {
-    public class SDK
+    public class SDK : ISdk
     {
-        private static readonly TaskCompletionSource<bool> _initializeTaskCompletionSource = new TaskCompletionSource<bool>();
-        public static Task<bool> InitializeTask => _initializeTaskCompletionSource.Task;
         public bool Initialized { get; private set; }
 
-        public async void Initialize()
+        private RemoteConfig _remoteConfig;
+        public RemoteConfig RemoteConfig => _remoteConfig ??= new RemoteConfig();
+
+        public void Initialize()
         {
             if (Initialized)
             {
-                _initializeTaskCompletionSource.TrySetResult(Initialized);
+                return;
             }
 
-            //simulation of download
-            await Task.Delay(2000);
+            RemoteConfig.Init();
 
             Initialized = true;
-            _initializeTaskCompletionSource.SetResult(true);
         }
     }
 }

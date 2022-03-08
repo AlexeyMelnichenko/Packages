@@ -6,8 +6,17 @@ namespace Core.Installers
     {
         public override void InstallBindings()
         {
+            BindSdk();
             BindClasses();
         }
+
+        private void BindSdk()
+        {
+            Container.BindInterfacesTo<SDK.SDK>().AsSingle().NonLazy();
+            OnBindSdk();
+        }
+
+        protected virtual void OnBindSdk() { }
 
         protected virtual void BindClasses()
         {

@@ -6,20 +6,18 @@ namespace Core
 {
     public class ApplicationController : IInitializable
     {
-        public IWindowsController WindowsController { get; }
-        
-        public SDK.SDK SDK { get; } = new SDK.SDK();
+        public ISdk Sdk { get; }
 
-        public ApplicationController(IWindowsController windowsController)
+        public ApplicationController(ISdk sdk)
         {
-            WindowsController = windowsController;
+            Sdk = sdk;
         }
         
         public void Initialize()
         {
             Application.targetFrameRate = 60;
-
-            SDK.Initialize();
+            
+            Sdk.Initialize();
             
             OnInitialize();
         }

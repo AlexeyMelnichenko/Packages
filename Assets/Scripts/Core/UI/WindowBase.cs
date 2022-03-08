@@ -56,15 +56,14 @@ namespace Core.UI
             await AnimateClosing();
             CloseInternal();
             OnClosed();
-            
-            WindowsController.OnCloseWindow(this);
         }
 
         private void CloseInternal()
         {
             _content.SetActive(false);
+            _isOpened = false;
+            ((IWindowsContainer)WindowsController).OnCloseWindow(this);
             _openTaskSource.SetResult(_closeResult);
-            _isOpened = true;
         }
         
         protected virtual void OnClosing() { }

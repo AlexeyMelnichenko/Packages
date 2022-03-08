@@ -1,3 +1,4 @@
+using Core;
 using Core.Installers;
 
 namespace GameScripts.Installers
@@ -6,7 +7,8 @@ namespace GameScripts.Installers
     {
         protected override void BindClasses()
         {
-            Container.BindInterfacesAndSelfTo<GameApplicationController>().AsSingle();
+            Container.BindInterfacesTo<GameApplicationController>().AsSingle();
+            Container.Bind<MonoEventsBroadcaster>().FromComponentInHierarchy().AsSingle();
         }
     }
 }

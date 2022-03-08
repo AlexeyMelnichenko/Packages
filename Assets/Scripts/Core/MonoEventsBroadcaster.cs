@@ -5,17 +5,53 @@ namespace Core
 {
     public class MonoEventsBroadcaster : MonoBehaviour
     {
-        public event Action<bool> ApplicationPauseChanged;
-        public event Action<bool> ApplicationFocusChanged;
-        public event Action ApplicationQuit;
+        private static MonoEventsBroadcaster _monoEventsBroadcasterInstance;
+        private bool _quit;
+        private bool _created;
+        
+        public event Action<bool> ApplicationPauseChanged = b => { };
+        public event Action<bool> ApplicationFocusChanged = b => { };
+        public event Action ApplicationQuit = () => { };
+        public event Action OnUpdate = () => { };
+        public event Action OnLateUpdate = () => { };
+        public event Action OnFixedUpdate = () => { };
 
         private void Awake()
         {
-            Application.quitting += OnApplicationQuit;
+            if (_monoEventsBroadcasterInstance)
+            {
+                Destroy(this);
+                return;
+            }
+
+            _created = true;
+            _monoEventsBroadcasterInstance = this;
+            Application.quitting += OnApplicationQuitting;
         }
 
-        private void OnApplicationQuit()
+        private void Update()
         {
+            OnUpdate();
+        }
+
+        private void LateUpdate()
+        {
+            OnLateUpdate();
+        }
+
+        private void FixedUpdate()
+        {
+            OnFixedUpdate();
+        }
+
+        private void OnApplicationQuitting()
+        {
+            if (_quit)
+            {
+                return;
+            }
+
+            _quit = true;
             ApplicationQuit?.Invoke();
         }
 
@@ -31,7 +67,17 @@ namespace Core
 
         private void OnDestroy()
         {
-            Application.quitting -= OnApplicationQuit;
+            if (!_created)
+            {
+                return;
+            }
+            
+            Application.quitting -= OnApplicationQuitting;
+            
+            if (!_quit)
+            {
+                OnApplicationQuitting();
+            }
         }
     }
 }

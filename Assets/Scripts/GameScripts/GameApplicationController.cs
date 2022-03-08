@@ -1,15 +1,18 @@
 using Core;
 using Core.Interfaces;
-using UI;
+using Core.UI;
+using GameScripts.UI.Windows;
 
 namespace GameScripts
 {
     public class GameApplicationController : ApplicationController
     {
         public Game Game { get; private set; }
+        public IWindowsController WindowsController { get; }
         
-        public GameApplicationController(IWindowsController windowsController) : base(windowsController)
+        public GameApplicationController(ISdk sdk, IWindowsController windowsController) : base(sdk)
         {
+            WindowsController = windowsController;
         }
 
         protected override async void OnInitialize()

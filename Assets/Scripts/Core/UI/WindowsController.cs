@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Core.UI
 {
-    public class WindowsController : IWindowsController
+    public class WindowsController : IWindowsController, IWindowsContainer
     {
         private readonly Transform _uiRoot;
         private readonly Dictionary<Type, WindowBase> _registeredWindows;
@@ -37,15 +37,21 @@ namespace Core.UI
 
         public TWindow Open<TWindow, TIntent>(TIntent intent) where TWindow : WindowWithIntent<TIntent> where TIntent : EmptyIntent
         {
-            var window = Open<TWindow>();
+            var window = GetWindow<TWindow>();
             ((IIntentSetter<TIntent>)window).SetIntent(intent);
-            return window;
+            OpenWindow(window);
+            return (TWindow)window;
         }
 
         public TWindow Open<TWindow>() where TWindow : WindowBase
         {
-            var windowType = typeof(TWindow);
-            var window = GetWindow(windowType);
+            var window = GetWindow<TWindow>();
+            OpenWindow(window);
+            return (TWindow)window;
+        }
+
+        private void OpenWindow(WindowBase window)
+        {
             if (_openedWindows.Contains(window))
             {
                 window.Push();
@@ -55,12 +61,11 @@ namespace Core.UI
                 window.Open();
                 _openedWindows.Add(window);
             }
-
-            return (TWindow)window;
         }
 
-        private WindowBase GetWindow(Type windowType)
+        private WindowBase GetWindow<TWindow>() where TWindow : WindowBase
         {
+            var windowType = typeof(TWindow);
             if (_registeredWindows.ContainsKey(windowType))
             {
                 if (_cachedWindows.ContainsKey(windowType))
@@ -78,7 +83,7 @@ namespace Core.UI
             throw new Exception($"Window {windowType.Name} is not registered!");
         }
 
-        void IWindowsController.OnCloseWindow(WindowBase window)
+        public void OnCloseWindow(WindowBase window)
         {
             if (_openedWindows.Contains(window))
             {
@@ -93,7 +98,7 @@ namespace Core.UI
             }
             
             _cachedWindows.Remove(type);
-            UnityEngine.Object.Destroy(window.gameObject);
+            UnityEngine.Object.Destroy(window.gameObject, 1f);
         }
     }
 }
