@@ -1,8 +1,6 @@
 using System.Threading.Tasks;
 using Core.UI;
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace GameScripts.UI.Windows
 {
